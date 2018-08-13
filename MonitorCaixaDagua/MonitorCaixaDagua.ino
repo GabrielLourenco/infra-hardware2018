@@ -5,7 +5,8 @@
 #include <BlynkSimpleEthernet.h>
 
 // Auth Token de conexão com o Blynk
-char auth[] = "23988228d5244a64910de5ce99fa9894";
+//char auth[] = "23988228d5244a64910de5ce99fa9894";
+char auth[] = "483f60feb270488d9df7754c35178b1e";
 
 #define W5100_CS  10
 
