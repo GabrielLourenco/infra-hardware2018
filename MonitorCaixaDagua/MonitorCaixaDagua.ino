@@ -19,17 +19,17 @@ unsigned int localPort = 8888;  // local port to listen for UDP packets
 
 #define W5100_CS  10
 
-const int pinoSensorCaixa1 = 48; //constante que define o pino digital 8 como do Sensor1.
-const int pinoSensorCaixa2 = 46; //constante que define o pino digital 8 como do Sensor1.
-const int pinoSensorCaixa3 = 44; //constante que define o pino digital 8 como do Sensor1.
-const int pinoSensorCaixa4 = 42; //constante que define o pino digital 8 como do Sensor1.
-const int pinoSensorCaixa5 = 40; //constante que define o pino digital 8 como do Sensor1.
+const int pinoSensorCaixa1 = 48; //constante que define o pino digital 48 como do Sensor1.
+const int pinoSensorCaixa2 = 46; //constante que define o pino digital 46 como do Sensor1.
+const int pinoSensorCaixa3 = 44; //constante que define o pino digital 44 como do Sensor1.
+const int pinoSensorCaixa4 = 42; //constante que define o pino digital 42 como do Sensor1.
+const int pinoSensorCaixa5 = 40; //constante que define o pino digital 40 como do Sensor1.
 
-const int pinoSensorCisterna1 = 38; //constante que define o pino digital 8 como do Sensor1.
-const int pinoSensorCisterna2 = 36; //constante que define o pino digital 8 como do Sensor1.
-const int pinoSensorCisterna3 = 34; //constante que define o pino digital 8 como do Sensor1.
-const int pinoSensorCisterna4 = 32; //constante que define o pino digital 8 como do Sensor1.
-const int pinoSensorCisterna5 = 30; //constante que define o pino digital 8 como do Sensor1.
+const int pinoSensorCisterna1 = 38; //constante que define o pino digital 38 como do Sensor1.
+const int pinoSensorCisterna2 = 36; //constante que define o pino digital 36 como do Sensor1.
+const int pinoSensorCisterna3 = 34; //constante que define o pino digital 34 como do Sensor1.
+const int pinoSensorCisterna4 = 32; //constante que define o pino digital 32 como do Sensor1.
+const int pinoSensorCisterna5 = 30; //constante que define o pino digital 30 como do Sensor1.
 
 int estadoSensorCaixa1 = 0; //Variável que conterá os estados do Sensor1 (0 LOW, 1 HIGH).
 int estadoSensorCaixa2 = 0; //Variável que conterá os estados do Sensor1 (0 LOW, 1 HIGH).
@@ -43,14 +43,34 @@ int estadoSensorCisterna3 = 0; //Variável que conterá os estados do Sensor1 (0
 int estadoSensorCisterna4 = 0; //Variável que conterá os estados do Sensor1 (0 LOW, 1 HIGH).
 int estadoSensorCisterna5 = 0; //Variável que conterá os estados do Sensor1 (0 LOW, 1 HIGH).
 
-int estadoLed1 = 1; //Variável que conterá os estados do Sensor1 (0 LOW, 1 HIGH).
+const int pinoLedRequisicao = 28 //constante que define o pino digital 30 como do Led da Requisição de caixa dagua.
+const int pinoLedBomba = 26 //constante que define o pino digital 30 como do Led da Bomba.
+const int pinoLedCisterna = 24 //constante que define o pino digital 30 como do Led da Cisterna.
+
+WidgetLED ledConexao(V1); //register to virtual pin
+WidgetLED ledBomba(V2); //register to virtual pin
+WidgetLED ledRequisicao(V3); //register to virtual pin
+WidgetLED ledCisterna(V4); //register to virtual pin
+WidgetTerminal terminal(V5);
+
+int modoCritico
+
+BLYNK_WRITE(V20){
+    modoCritico = param.asInt();
+    if(modoCritico == 1){
+      Blynk.setProperty(V20, "color", "#D3435C");
+      digitalClockDisplay("Modo Critico Ativado");
+    }else{
+      Blynk.setProperty(V20, "color", "#23C48E");
+      digitalClockDisplay("Modo Critico Desativado");
+    }
+}
+
+int estadoledConexao = 1; //Variável que conterá os estados do Sensor1 (0 LOW, 1 HIGH).
 
 long lastTime1 = 0;
 long lastTime2 = 0;
 long lastTime3 = 0;
-
-WidgetLED led1(V1); //register to virtual pin
-WidgetLED led2(V2); //register to virtual pin
 
 void setup()
 {
@@ -86,35 +106,34 @@ void setup()
   pinMode(pinoSensorCisterna4,INPUT); //Definindo pino do Sensor2 como de entrada.
   pinMode(pinoSensorCisterna5,INPUT); //Definindo pino do Sensor2 como de entrada.
 
-  led1.off(); //desligando o led1
+  pinMode(pinoLedRequisicao, OUTPUT);
+  pinMode(pinoLedBomba, OUTPUT);
+  pinMode(pinoLedCisterna, OUTPUT);
+
+  ledConexao.off(); //desligando o ledConexao
   //led2.off(); //desligando o led2
   
 }
 
 time_t prevDisplay = 0; // when the digital clock was displayed
-horaagora = 0;
+int horaagora = 0;
+int cisterna = 0;
+int bomba = 0;
+int bombaAnterior = 0;
+
 
 void loop()
 {
-  if (timeStatus() != timeNotSet) {
-    if (now() != prevDisplay) { //update the display only if time has changed
-      prevDisplay = now();
-      if(hour() - horaagora > 1){
-          //fazer algo
-          horaagora = hour()
-        }
-    }
-  }
-    
+     
   Blynk.run();
   
   if (millis() - lastTime2 > 500) {
-    if (estadoLed1 == HIGH) {
-      estadoLed1 = 0;
-      led1.off();
+    if (estadoledConexao == HIGH) {
+      estadoledConexao = 0;
+      ledConexao.off();
     } else {
-      estadoLed1 = 1;
-      led1.on();
+      estadoledConexao = 1;
+      ledConexao.on();
     }
 
     lastTime2 = millis();
@@ -133,12 +152,90 @@ void loop()
     estadoSensorCisterna4 = digitalRead(pinoSensorCisterna4); //Lendo o estado do pino do Sensor2
     estadoSensorCisterna5 = digitalRead(pinoSensorCisterna5); //Lendo o estado do pino do Sensor2
 
+    //Verifica se a cisterna está pronta com água para encher a caixa
+    if(modoCritico == 1){
+      if(estadoSensorCisterna1 == 1){
+        ledCisterna.on();
+        digitalWrite(pinoLedCisterna, HIGH);
+        cisterna = 1;
+      }else{
+        ledCisterna.off();
+        digitalWrite(pinoLedCisterna, LOW);
+        cisterna = 0;
+      }
+    }else{
+      if(estadoSensorCisterna2 == 1){
+        ledCisterna.on();
+        digitalWrite(pinoLedCisterna, HIGH);
+        cisterna = 1;
+      }else{
+        ledCisterna.off();
+        digitalWrite(pinoLedCisterna, LOW);
+        cisterna = 0;
+      }
+    }
+
+    //Verifica se a caixa necessita de água
+    if(estadoSensorCaixa5 == 0){
+      ledRequisicao.on();
+      digitalWrite(pinoLedRequisicao, HIGH);
+      if(cisterna == 1){
+        ledBomba.on();
+        digitalWrite(pinoLedBomba, HIGH);
+        bomba = 1;        
+      }else{
+        ledBomba.off();
+        digitalWrite(pinoLedBomba, LOW);
+        bomba = 0;
+      }
+    }else{
+      ledRequisicao.off();
+      ledBomba.off();
+      digitalWrite(pinoLedRequisicao, LOW);
+      digitalWrite(pinoLedBomba, LOW);
+    }
+
+    if(bomba != bombaAnterior){
+      
+      if(bomba == 1){
+        digitalClockDisplay("Bomba Ligada");
+      }else{
+        digitalClockDisplay("Bomba Desligada");
+      }
+      bombaAnterior = bomba;
+    }
+
+
     Blynk.virtualWrite(V0,  20*estadoSensorCaixa1+20*estadoSensorCaixa2+20*estadoSensorCaixa3+20*estadoSensorCaixa4+20*estadoSensorCaixa5);
-    Blynk.virtualWrite(V10, 20*estadoSensorCisterna1+20*estadoSensorCisterna2+20*estadoSensorCisterna3+20*estadoSensorCisterna4+20*estadoSensorCisterna5);
-    
+    Blynk.virtualWrite(V10, 25*estadoSensorCisterna2+25*estadoSensorCisterna3+25*estadoSensorCisterna4+25*estadoSensorCisterna5);
     
     lastTime1 = millis();
   }
+}
+
+
+void digitalClockDisplay(char mensagem){
+  // digital clock display of the time
+  terminal.print(mensagem);
+  terminal.print(" as ");
+  terminal.print(hour());
+  printDigits(minute());
+  printDigits(second());
+  terminal.print(" ");
+  terminal.print(day());
+  terminal.print("-");
+  terminal.print(month());
+  terminal.print("-");
+  terminal.print(year()); 
+  terminal.println();
+}
+
+void printDigits(int digits){
+  // utility for digital clock display: prints preceding colon and leading 0
+  terminal.print(":");
+  if(digits < 10)
+    terminal.print('0');
+  terminal.print(digits);
 }
 
 
