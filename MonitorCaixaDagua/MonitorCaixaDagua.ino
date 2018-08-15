@@ -19,17 +19,29 @@ unsigned int localPort = 8888;  // local port to listen for UDP packets
 
 #define W5100_CS  10
 
-const int pinoSensor1 = 2; //constante que define o pino digital 8 como do Sensor1.
-const int pinoSensor2 = 3; //constante que define o pino digital 8 como do Sensor1.
-const int pinoSensor3 = 4; //constante que define o pino digital 8 como do Sensor1.
-const int pinoSensor4 = 5; //constante que define o pino digital 8 como do Sensor1.
-const int pinoSensor5 = 6; //constante que define o pino digital 8 como do Sensor1.
+const int pinoSensorCaixa1 = 48; //constante que define o pino digital 8 como do Sensor1.
+const int pinoSensorCaixa2 = 46; //constante que define o pino digital 8 como do Sensor1.
+const int pinoSensorCaixa3 = 44; //constante que define o pino digital 8 como do Sensor1.
+const int pinoSensorCaixa4 = 42; //constante que define o pino digital 8 como do Sensor1.
+const int pinoSensorCaixa5 = 40; //constante que define o pino digital 8 como do Sensor1.
 
-int estadoSensor1 = 0; //Variável que conterá os estados do Sensor1 (0 LOW, 1 HIGH).
-int estadoSensor2 = 0; //Variável que conterá os estados do Sensor1 (0 LOW, 1 HIGH).
-int estadoSensor3 = 0; //Variável que conterá os estados do Sensor1 (0 LOW, 1 HIGH).
-int estadoSensor4 = 0; //Variável que conterá os estados do Sensor1 (0 LOW, 1 HIGH).
-int estadoSensor5 = 0; //Variável que conterá os estados do Sensor1 (0 LOW, 1 HIGH).
+const int pinoSensorCisterna1 = 38; //constante que define o pino digital 8 como do Sensor1.
+const int pinoSensorCisterna2 = 36; //constante que define o pino digital 8 como do Sensor1.
+const int pinoSensorCisterna3 = 34; //constante que define o pino digital 8 como do Sensor1.
+const int pinoSensorCisterna4 = 32; //constante que define o pino digital 8 como do Sensor1.
+const int pinoSensorCisterna5 = 30; //constante que define o pino digital 8 como do Sensor1.
+
+int estadoSensorCaixa1 = 0; //Variável que conterá os estados do Sensor1 (0 LOW, 1 HIGH).
+int estadoSensorCaixa2 = 0; //Variável que conterá os estados do Sensor1 (0 LOW, 1 HIGH).
+int estadoSensorCaixa3 = 0; //Variável que conterá os estados do Sensor1 (0 LOW, 1 HIGH).
+int estadoSensorCaixa4 = 0; //Variável que conterá os estados do Sensor1 (0 LOW, 1 HIGH).
+int estadoSensorCaixa5 = 0; //Variável que conterá os estados do Sensor1 (0 LOW, 1 HIGH).
+
+int estadoSensorCisterna1 = 0; //Variável que conterá os estados do Sensor1 (0 LOW, 1 HIGH).
+int estadoSensorCisterna2 = 0; //Variável que conterá os estados do Sensor1 (0 LOW, 1 HIGH).
+int estadoSensorCisterna3 = 0; //Variável que conterá os estados do Sensor1 (0 LOW, 1 HIGH).
+int estadoSensorCisterna4 = 0; //Variável que conterá os estados do Sensor1 (0 LOW, 1 HIGH).
+int estadoSensorCisterna5 = 0; //Variável que conterá os estados do Sensor1 (0 LOW, 1 HIGH).
 
 int estadoLed1 = 1; //Variável que conterá os estados do Sensor1 (0 LOW, 1 HIGH).
 
@@ -61,11 +73,18 @@ void setup()
   
   Blynk.begin(auth);
 
-  pinMode(pinoSensor1,INPUT); //Definindo pino do Sensor1 como de entrada. 
-  pinMode(pinoSensor2,INPUT); //Definindo pino do Sensor2 como de entrada.
-  pinMode(pinoSensor3,INPUT); //Definindo pino do Sensor2 como de entrada.
-  pinMode(pinoSensor4,INPUT); //Definindo pino do Sensor2 como de entrada.
-  pinMode(pinoSensor5,INPUT); //Definindo pino do Sensor2 como de entrada.
+
+  pinMode(pinoSensorCaixa1,INPUT); //Definindo pino do Sensor1 como de entrada. 
+  pinMode(pinoSensorCaixa2,INPUT); //Definindo pino do Sensor2 como de entrada.
+  pinMode(pinoSensorCaixa3,INPUT); //Definindo pino do Sensor2 como de entrada.
+  pinMode(pinoSensorCaixa4,INPUT); //Definindo pino do Sensor2 como de entrada.
+  pinMode(pinoSensorCaixa5,INPUT); //Definindo pino do Sensor2 como de entrada.
+
+  pinMode(pinoSensorCisterna1,INPUT); //Definindo pino do Sensor1 como de entrada. 
+  pinMode(pinoSensorCisterna2,INPUT); //Definindo pino do Sensor2 como de entrada.
+  pinMode(pinoSensorCisterna3,INPUT); //Definindo pino do Sensor2 como de entrada.
+  pinMode(pinoSensorCisterna4,INPUT); //Definindo pino do Sensor2 como de entrada.
+  pinMode(pinoSensorCisterna5,INPUT); //Definindo pino do Sensor2 como de entrada.
 
   led1.off(); //desligando o led1
   //led2.off(); //desligando o led2
@@ -101,15 +120,21 @@ void loop()
     lastTime2 = millis();
   }
   
-  if (millis() - lastTime1 > 1000) {
-    //Blynk.run();
-    estadoSensor1 = digitalRead(pinoSensor1); //Lendo o estado do pino do Sensor1
-    estadoSensor2 = digitalRead(pinoSensor2); //Lendo o estado do pino do Sensor2
-    estadoSensor3 = digitalRead(pinoSensor3); //Lendo o estado do pino do Sensor2
-    estadoSensor4 = digitalRead(pinoSensor4); //Lendo o estado do pino do Sensor2
-    estadoSensor5 = digitalRead(pinoSensor5); //Lendo o estado do pino do Sensor2
+  if (millis() - lastTime1 > 500) {
+    estadoSensorCaixa1 = digitalRead(pinoSensorCaixa1); //Lendo o estado do pino do Sensor1
+    estadoSensorCaixa2 = digitalRead(pinoSensorCaixa2); //Lendo o estado do pino do Sensor2
+    estadoSensorCaixa3 = digitalRead(pinoSensorCaixa3); //Lendo o estado do pino do Sensor2
+    estadoSensorCaixa4 = digitalRead(pinoSensorCaixa4); //Lendo o estado do pino do Sensor2
+    estadoSensorCaixa5 = digitalRead(pinoSensorCaixa5); //Lendo o estado do pino do Sensor2
 
-    Blynk.virtualWrite(V0, 20*estadoSensor1+20*estadoSensor2+20*estadoSensor3+20*estadoSensor4+20*estadoSensor5);
+    estadoSensorCisterna1 = digitalRead(pinoSensorCisterna1); //Lendo o estado do pino do Sensor1
+    estadoSensorCisterna2 = digitalRead(pinoSensorCisterna2); //Lendo o estado do pino do Sensor2
+    estadoSensorCisterna3 = digitalRead(pinoSensorCisterna3); //Lendo o estado do pino do Sensor2
+    estadoSensorCisterna4 = digitalRead(pinoSensorCisterna4); //Lendo o estado do pino do Sensor2
+    estadoSensorCisterna5 = digitalRead(pinoSensorCisterna5); //Lendo o estado do pino do Sensor2
+
+    Blynk.virtualWrite(V0,  20*estadoSensorCaixa1+20*estadoSensorCaixa2+20*estadoSensorCaixa3+20*estadoSensorCaixa4+20*estadoSensorCaixa5);
+    Blynk.virtualWrite(V10, 20*estadoSensorCisterna1+20*estadoSensorCisterna2+20*estadoSensorCisterna3+20*estadoSensorCisterna4+20*estadoSensorCisterna5);
     
     
     lastTime1 = millis();
