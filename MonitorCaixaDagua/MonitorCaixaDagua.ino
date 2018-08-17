@@ -9,8 +9,9 @@
 
 // You should get Auth Token in the Blynk App.
 // Go to the Project Settings (nut icon).
-char auth[] = "78177ea4b1c044be83be484f66d977e6";
+char auth[] = "704b8a8707694b0c985ca970514f4bfe";
 byte mac[] = {  0x00, 0x00, 0xAA, 0xBB, 0xCC, 0xDD};
+IPAddress timeServer(200,160,7,186);
 
 const int timeZone = -3;
 EthernetUDP Udp;
@@ -43,9 +44,9 @@ int estadoSensorCisterna3 = 0; //Variável que conterá os estados do Sensor1 (0
 int estadoSensorCisterna4 = 0; //Variável que conterá os estados do Sensor1 (0 LOW, 1 HIGH).
 int estadoSensorCisterna5 = 0; //Variável que conterá os estados do Sensor1 (0 LOW, 1 HIGH).
 
-const int pinoLedRequisicao = 28 //constante que define o pino digital 30 como do Led da Requisição de caixa dagua.
-const int pinoLedBomba = 26 //constante que define o pino digital 30 como do Led da Bomba.
-const int pinoLedCisterna = 24 //constante que define o pino digital 30 como do Led da Cisterna.
+const int pinoLedRequisicao = 28; //constante que define o pino digital 30 como do Led da Requisição de caixa dagua.
+const int pinoLedBomba = 26; //constante que define o pino digital 30 como do Led da Bomba.
+const int pinoLedCisterna = 24; //constante que define o pino digital 30 como do Led da Cisterna.
 
 WidgetLED ledConexao(V1); //register to virtual pin
 WidgetLED ledBomba(V2); //register to virtual pin
@@ -53,7 +54,7 @@ WidgetLED ledRequisicao(V3); //register to virtual pin
 WidgetLED ledCisterna(V4); //register to virtual pin
 WidgetTerminal terminal(V5);
 
-int modoCritico
+int modoCritico = 0;
 
 BLYNK_WRITE(V20){
     modoCritico = param.asInt();
@@ -112,7 +113,8 @@ void setup()
 
   ledConexao.off(); //desligando o ledConexao
   //led2.off(); //desligando o led2
-  
+
+  terminal.clear();
 }
 
 time_t prevDisplay = 0; // when the digital clock was displayed
@@ -154,7 +156,7 @@ void loop()
 
     //Verifica se a cisterna está pronta com água para encher a caixa
     if(modoCritico == 1){
-      if(estadoSensorCisterna1 == 1){
+      if(estadoSensorCisterna5 == 1){
         ledCisterna.on();
         digitalWrite(pinoLedCisterna, HIGH);
         cisterna = 1;
@@ -164,7 +166,7 @@ void loop()
         cisterna = 0;
       }
     }else{
-      if(estadoSensorCisterna2 == 1){
+      if(estadoSensorCisterna4 == 1){
         ledCisterna.on();
         digitalWrite(pinoLedCisterna, HIGH);
         cisterna = 1;
@@ -176,7 +178,7 @@ void loop()
     }
 
     //Verifica se a caixa necessita de água
-    if(estadoSensorCaixa5 == 0){
+    if(estadoSensorCaixa2 == 0){
       ledRequisicao.on();
       digitalWrite(pinoLedRequisicao, HIGH);
       if(cisterna == 1){
@@ -207,14 +209,19 @@ void loop()
 
 
     Blynk.virtualWrite(V0,  20*estadoSensorCaixa1+20*estadoSensorCaixa2+20*estadoSensorCaixa3+20*estadoSensorCaixa4+20*estadoSensorCaixa5);
-    Blynk.virtualWrite(V10, 25*estadoSensorCisterna2+25*estadoSensorCisterna3+25*estadoSensorCisterna4+25*estadoSensorCisterna5);
+    if(estadoSensorCisterna1+estadoSensorCisterna2+estadoSensorCisterna3+estadoSensorCisterna4 == 0 && estadoSensorCisterna5 == 1){
+      Blynk.virtualWrite(V10, 10);
+    }else{
+      Blynk.virtualWrite(V10, 25*estadoSensorCisterna1+25*estadoSensorCisterna2+25*estadoSensorCisterna3+25*estadoSensorCisterna4);
+    }
+
     
     lastTime1 = millis();
   }
 }
 
 
-void digitalClockDisplay(char mensagem){
+void digitalClockDisplay(char mensagem[]){
   // digital clock display of the time
   terminal.print(mensagem);
   terminal.print(" as ");
@@ -228,6 +235,7 @@ void digitalClockDisplay(char mensagem){
   terminal.print("-");
   terminal.print(year()); 
   terminal.println();
+  terminal.flush();
 }
 
 void printDigits(int digits){
